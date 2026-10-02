@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Protótipo: especial sobre violência policial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --bg:#E3E5E1; --fg:#23262B; --muted:#565B62; --accent:#2340C8;
+  --quote-bg:#23262B; --quote-fg:#EEF0EC; --accent-on-dark:#A9B8FF;
+  --panel-bg:#F2F3F0; --line:rgba(35,38,43,.18);
+  --display:"Big Shoulders Display","Arial Narrow","Impact",sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --pad:clamp(1.25rem,5vw,3rem);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1D21; --fg:#E9EBE7; --muted:#A3A8AF; --accent:#9FB1FF;
+    --quote-bg:#101215; --panel-bg:#24272C; --line:rgba(233,235,231,.2);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1D21; --fg:#E9EBE7; --muted:#A3A8AF; --accent:#9FB1FF;
+  --quote-bg:#101215; --panel-bg:#24272C; --line:rgba(233,235,231,.2);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--serif);font-size:1.15rem;line-height:1.6}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* ---------- 1. abertura ---------- */
+.hero{
+  position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden;
+  background-color:var(--bg);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .22 0 0 0 -.08'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.strip{
+  position:absolute;top:0;bottom:0;width:min(24vw,15rem);overflow:hidden;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:3px;align-content:end;
+  -webkit-mask-image:linear-gradient(to top,#000 38%,transparent 94%);
+          mask-image:linear-gradient(to top,#000 38%,transparent 94%);
+}
+.strip--l{left:0}.strip--r{right:0}
+.strip svg{display:block;width:100%;aspect-ratio:1;filter:grayscale(1)}
+.hero__text{position:relative;z-index:1;text-align:center;width:calc(100% - 52vw);min-width:11.5rem;max-width:34rem;padding:4rem 0 6rem}
+.hero__kicker{margin:0;font-size:1.15rem;line-height:1.25}
+.hero__n{
+  margin:.05em 0 0;font-family:var(--display);font-weight:900;color:var(--accent);
+  font-size:clamp(7rem,36vw,15rem);line-height:.82;letter-spacing:-.01em;font-variant-numeric:tabular-nums;
+}
+.hero__what{margin:.15em 0 .5rem;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(1.7rem,7.4vw,3rem);line-height:.95}
+.hero__sub{margin:0;font-size:1.02rem;line-height:1.35;color:var(--muted)}
+.hero__scroll{position:absolute;z-index:1;left:50%;bottom:calc(1.5rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.25rem;font-size:1rem;color:var(--fg)}
+.hero__scroll svg{width:1.6rem;height:1.6rem;stroke:var(--accent);fill:none;stroke-width:2}
+
+@media (min-width:900px){
+  .strip{grid-template-columns:repeat(3,1fr)}
+  .hero__text{width:calc(100% - 36rem)}
+}
+@media (prefers-reduced-motion:no-preference){
+  .strip svg{animation:surge .6s ease-out both;animation-delay:calc(var(--d,0) * 1ms)}
+  @keyframes surge{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+
+/* ---------- 2. texto ---------- */
+.intro{max-width:42rem;margin:0 auto;padding:clamp(4rem,12vw,8rem) var(--pad)}
+.intro h2{margin:0 0 1.5rem;font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(2.7rem,11vw,5.2rem);line-height:.92}
+.intro p{margin:0 0 1.2em;max-width:36rem}
+
+/* ---------- 3. aspas sobre retrato ---------- */
+.quote{position:relative;background:var(--quote-bg);color:var(--quote-fg)}
+.quote__stage{position:sticky;top:0;height:100svh;overflow:hidden}
+.quote__stage svg{display:block;width:100%;height:100%;opacity:.55;filter:grayscale(1)}
+.quote__stage::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,var(--quote-bg) 0%,transparent 35%,transparent 55%,var(--quote-bg) 100%)}
+.quote__body{position:relative;margin-top:-100svh;min-height:150svh;padding:34svh var(--pad) 18svh;max-width:60rem}
+.quote blockquote{margin:0}
+.quote__mark{display:block;font-family:var(--display);font-weight:900;font-size:7rem;line-height:.6;height:3.2rem;color:var(--accent-on-dark)}
+.quote p{margin:0;font-style:italic;font-weight:500;font-size:clamp(1.95rem,7.2vw,3.6rem);line-height:1.12;text-wrap:balance}
+.quote footer{margin-top:1.6rem;font-size:1.1rem;line-height:1.35}
+.quote footer strong{display:block;font-weight:600;font-size:1.2rem}
+.quote footer span{opacity:.78}
+
+/* ---------- 4. mosaico + painel ---------- */
+.who{max-width:74rem;margin:0 auto;padding:clamp(3.5rem,9vw,6.5rem) var(--pad) clamp(5rem,12vw,8rem)}
+.who h2{margin:0 0 .6rem;font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(2.7rem,11vw,5.2rem);line-height:.92}
+.who__lead{margin:0 0 2rem;max-width:30rem;color:var(--muted)}
+.who__grid{display:grid;gap:2rem}
+.mosaic{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;align-content:start}
+.tile{padding:0;border:0;background:none;cursor:pointer;display:block;position:relative;scroll-margin-top:18svh;transition:opacity .2s}
+.tile svg{display:block;width:100%;aspect-ratio:1;filter:grayscale(1)}
+.mosaic.has-sel .tile:not(.is-sel){opacity:.45}
+.tile.is-sel{z-index:1;outline:3px solid var(--accent);outline-offset:-3px}
+@media (min-width:600px){.mosaic{grid-template-columns:repeat(9,1fr)}}
+@media (min-width:900px){
+  .who__grid{grid-template-columns:minmax(0,1fr) 22rem;align-items:start;gap:3rem}
+  .mosaic{grid-template-columns:repeat(7,1fr)}
+}
+
+.scrim{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{
+  position:fixed;z-index:21;left:0;right:0;bottom:0;max-height:62svh;overflow:auto;
+  background:var(--panel-bg);border-top:3px solid var(--accent);
+  padding:1.1rem var(--pad) calc(1.25rem + env(safe-area-inset-bottom,0px));
+  transform:translateY(105%);transition:transform .28s ease-out;
+}
+.panel.is-open{transform:none}
+.panel__close{position:absolute;top:.5rem;right:.75rem;width:2.75rem;height:2.75rem;border:0;background:none;font-size:2rem;line-height:1;cursor:pointer}
+.panel__head{display:grid;grid-template-columns:5.5rem 1fr;gap:1rem;align-items:center;margin-right:2.5rem}
+.panel__photo svg{display:block;width:100%;aspect-ratio:1;filter:grayscale(1)}
+.panel h3{margin:0;font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:1.9rem;line-height:.95}
+.panel__meta{margin:.35rem 0 0;font-size:1rem;color:var(--muted);line-height:1.3}
+.panel h4{margin:1.2rem 0 .25rem;font-size:1.2rem;font-style:italic;font-weight:600;color:var(--accent)}
+.panel p{margin:0}
+.panel__nav{display:flex;gap:.75rem;margin-top:1.4rem}
+.panel__nav button{flex:1;padding:.7rem 1rem;border:1.5px solid var(--fg);background:none;cursor:pointer}
+@media (min-width:900px){
+  .scrim{display:none}
+  .panel{
+    position:sticky;top:1.5rem;left:auto;right:auto;bottom:auto;z-index:1;max-height:calc(100svh - 3rem);
+    transform:none;border:1.5px solid var(--line);border-top:3px solid var(--accent);padding:1.25rem;
+  }
+  .panel__close{display:none}
+  .panel__head{grid-template-columns:1fr;margin-right:0}
+  .panel__photo svg{aspect-ratio:4/3}
+  .panel h3{margin-top:.4rem;font-size:2.3rem}
+}
+
+/* ---------- rodapé ---------- */
+.note{margin:0;padding:2rem var(--pad) 3rem;border-top:1px solid var(--line);font-size:.95rem;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+
+<header class="hero" aria-label="Abertura">
+  <div class="strip strip--l" id="stripL" aria-hidden="true"></div>
+  <div class="strip strip--r" id="stripR" aria-hidden="true"></div>
+  <div class="hero__text">
+    <p class="hero__kicker">Em quatro anos, atendemos</p>
+    <p class="hero__n" id="count" aria-label="84 casos">0</p>
+    <p class="hero__what">casos de execução sumária e tortura</p>
+    <p class="hero__sub">cometidos por policiais</p>
+  </div>
+  <div class="hero__scroll">
+    Role para ler
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17M5 13l7 7 7-7"/></svg>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <h2>Cada rosto aqui tinha um nome, um trabalho e planos.</h2>
+    <p>Este é um texto de abertura de exemplo. Ele apresenta o recorte do especial: quais casos entram, em que período e o que a equipe encontrou nos processos.</p>
+    <p>Mais abaixo, cada caso pode ser aberto para ler quem a pessoa era e o que sonhava.</p>
+  </section>
+
+  <section class="quote" aria-label="Depoimento">
+    <div class="quote__stage" aria-hidden="true" id="quotePortrait"></div>
+    <div class="quote__body">
+      <blockquote>
+        <span class="quote__mark" aria-hidden="true">&ldquo;</span>
+        <p>Texto de exemplo: a fala de um familiar entra aqui, do jeito que foi dita, sem edição bonita.&rdquo;</p>
+        <footer><strong>Nome de quem fala</strong><span>mãe de Nome do caso 07</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="who" aria-labelledby="quem">
+    <h2 id="quem">Quem eram</h2>
+    <p class="who__lead">Escolha um rosto para ler quem a pessoa era e o que sonhava.</p>
+    <div class="who__grid">
+      <div class="mosaic" id="mosaic"></div>
+      <aside class="panel" id="panel" aria-live="polite" aria-label="Detalhes do caso">
+        <button class="panel__close" id="close" aria-label="Fechar">&times;</button>
+        <div class="panel__head">
+          <div class="panel__photo" id="pPhoto"></div>
+          <div>
+            <h3 id="pName"></h3>
+            <p class="panel__meta" id="pMeta"></p>
+          </div>
+        </div>
+        <h4>Quem era</h4>
+        <p id="pWho"></p>
+        <h4>Sonhos</h4>
+        <p id="pDream"></p>
+        <div class="panel__nav">
+          <button type="button" id="prev">Anterior</button>
+          <button type="button" id="next">Próximo</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<p class="note">Protótipo de estrutura. Fotos, nomes, textos e números são fictícios.</p>
+<div class="scrim" id="scrim"></div>
+
+<script>
+(function(){
+  var N = 84;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var wide = window.matchMedia('(min-width: 900px)');
+  function $(s){ return document.querySelector(s); }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  // gerador determinístico: mesma semente, mesmo rosto
+  function rng(seed){ var s = (seed * 9973 + 7) >>> 0; return function(){ s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+  function avatar(seed){
+    var r = rng(seed);
+    var bg = 150 + Math.floor(r() * 90);
+    var fg = bg - 60 - Math.floor(r() * 30);
+    var cx = 50 + (r() - .5) * 8, hy = 40 + (r() - .5) * 6, hr = 17 + r() * 5;
+    var rx = 36 + r() * 8, f = 'rgb(' + fg + ',' + fg + ',' + fg + ')';
+    return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+      '<rect width="100" height="100" fill="rgb(' + bg + ',' + bg + ',' + bg + ')"/>' +
+      '<ellipse cx="' + cx + '" cy="106" rx="' + rx + '" ry="40" fill="' + f + '"/>' +
+      '<rect x="' + (cx - 8) + '" y="' + (hy + hr - 4) + '" width="16" height="26" fill="' + f + '"/>' +
+      '<circle cx="' + cx + '" cy="' + hy + '" r="' + hr + '" fill="' + f + '"/></svg>';
+  }
+
+  // ---- abertura: rostos que sobem dos cantos + contador ----
+  function strip(el, count, offset){
+    var html = '';
+    for (var i = 0; i < count; i++){
+      var d = (count - i) * 14 + Math.floor(Math.random() * 120);
+      html += avatar(offset + i).replace('<svg ', '<svg style="--d:' + d + '" ');
+    }
+    el.innerHTML = html;
+  }
+  strip($('#stripL'), 54, 200);
+  strip($('#stripR'), 54, 400);
+
+  var countEl = $('#count');
+  function setCount(v){ countEl.textContent = v; }
+  if (reduce){ setCount(N); }
+  else {
+    var t0 = null, dur = 1700;
+    (function step(t){
+      if (t0 === null) t0 = t;
+      var p = Math.min((t - t0) / dur, 1);
+      setCount(Math.round(N * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    })(performance.now());
+  }
+
+  // ---- aspas: retrato grande (marcador de posição) ----
+  $('#quotePortrait').innerHTML =
+    '<svg viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa0a6"/><stop offset="1" stop-color="#5b6066"/></linearGradient></defs>' +
+    '<rect width="400" height="700" fill="url(#g)"/>' +
+    '<ellipse cx="210" cy="760" rx="190" ry="250" fill="#2d3136"/>' +
+    '<rect x="180" y="330" width="60" height="90" fill="#2d3136"/>' +
+    '<circle cx="210" cy="270" r="95" fill="#2d3136"/></svg>';
+
+  // ---- mosaico + painel ----
+  var whoTxt = [
+    'Texto de exemplo. Aqui entra o que a família contar: onde trabalhava, o que gostava de fazer no fim de semana, como os amigos descrevem a pessoa.',
+    'Texto de exemplo mais curto, para testar o painel com pouco conteúdo.',
+    'Texto de exemplo mais longo, para testar a rolagem dentro do painel no celular. A pessoa trabalhava desde cedo, cuidava dos irmãos menores, jogava bola aos domingos e era conhecida na rua por ajudar quem precisava. Os vizinhos lembram do jeito de contar piada e da risada alta.',
+    'Texto de exemplo de tamanho médio. Fala do bairro onde cresceu, da escola que não terminou por causa do trabalho e de quem ficou esperando em casa.'
+  ];
+  var dreamTxt = [
+    'Texto de exemplo: o que queria ser, o que planejava para os próximos anos.',
+    'Queria terminar os estudos e abrir o próprio negócio.',
+    'Texto de exemplo: sonhava em viajar com a família pela primeira vez e comprar uma casa para a mãe.',
+    'Texto de exemplo: queria ser pai, voltar a estudar e conhecer o mar.'
+  ];
+  var data = [];
+  for (var i = 0; i < N; i++){
+    data.push({
+      name: 'Nome do caso ' + pad(i + 1),
+      meta: (19 + (i * 7) % 30) + ' anos · Cidade · ' + (2022 + i % 5),
+      who: whoTxt[i % 4], dream: dreamTxt[(i * 3) % 4]
+    });
+  }
+
+  var grid = $('#mosaic'), panel = $('#panel'), scrim = $('#scrim');
+  var tiles = [], cur = -1, last = null;
+  data.forEach(function(d, k){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tile';
+    b.setAttribute('aria-label', 'Ver ' + d.name);
+    b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = avatar(k + 1);
+    b.addEventListener('click', function(){ last = b; select(k, true); });
+    grid.appendChild(b);
+    tiles.push(b);
+  });
+
+  function select(i, fromTap){
+    cur = (i + N) % N;
+    var d = data[cur];
+    tiles.forEach(function(t, k){
+      var on = k === cur;
+      t.classList.toggle('is-sel', on);
+      t.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    grid.classList.add('has-sel');
+    $('#pPhoto').innerHTML = avatar(cur + 1);
+    $('#pName').textContent = d.name;
+    $('#pMeta').textContent = d.meta;
+    $('#pWho').textContent = d.who;
+    $('#pDream').textContent = d.dream;
+    panel.scrollTop = 0;
+    if (!wide.matches){
+      panel.classList.add('is-open');
+      scrim.classList.add('on');
+      if (!fromTap) tiles[cur].scrollIntoView({block:'start', behavior: reduce ? 'auto' : 'smooth'});
+    }
+  }
+  function closePanel(){
+    if (wide.matches) return;
+    panel.classList.remove('is-open');
+    scrim.classList.remove('on');
+    grid.classList.remove('has-sel');
+    tiles.forEach(function(t){ t.classList.remove('is-sel'); t.setAttribute('aria-pressed','false'); });
+    cur = -1;
+    if (last) last.focus({preventScroll:true});
+  }
+  $('#prev').addEventListener('click', function(){ select(cur - 1, false); });
+  $('#next').addEventListener('click', function(){ select(cur + 1, false); });
+  $('#close').addEventListener('click', closePanel);
+  scrim.addEventListener('click', closePanel);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closePanel(); });
+
+  function sync(){
+    if (wide.matches){
+      panel.classList.remove('is-open'); scrim.classList.remove('on');
+      if (cur < 0) select(0, true);
+    } else if (cur >= 0 && !panel.classList.contains('is-open')){
+      closePanel();
+    }
+  }
+  if (wide.addEventListener) wide.addEventListener('change', sync); else wide.addListener(sync);
+  sync();
+})();
+</script>
+</body>
+</html>
